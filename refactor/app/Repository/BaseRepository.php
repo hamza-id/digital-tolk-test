@@ -83,9 +83,7 @@ class BaseRepository
      */
     public function findBySlug($slug)
     {
-
         return $this->model->where('slug', $slug)->first();
-
     }
 
     /**
@@ -195,11 +193,23 @@ class BaseRepository
         }
 
         if ($validator->fails()) {
-            return false;
             throw (new ValidationException)->setValidator($validator);
+            return false;
         }
 
         return true;
     }
 
+    /**
+     * Function to delay the push
+     * @param $user_id
+     * @return bool
+     */
+    public function isNeedToDelayPush($user_id)
+    {
+        if (!DateTimeHelper::isNightTime()) return false;
+        $not_get_nighttime = TeHelper::getUsermeta($user_id, 'not_get_nighttime');
+        if ($not_get_nighttime == 'yes') return true;
+        return false;
+    }
 }
